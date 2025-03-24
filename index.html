@@ -1,14 +1,150 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Task List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #task-form {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        #task-input {
+            flex-grow: 1;
+            padding: 10px;
+            font-size: 16px;
+        }
+        #add-task {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #add-task:hover {
+            background-color: #45a049;
+        }
+        #task-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin-bottom: 5px;
+            background-color: #f9f9f9;
+        }
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .delete-btn:hover {
+            background-color: #d32f2f;
+        }
+    </style>
 </head>
-
 <body>
-    javscript nahi aati mujhe
-</body>
+    <h1>Task List</h1>
+    
+    <form id="task-form">
+        <input type="text" id="task-input" placeholder="Enter a new task..." required>
+        <button type="submit" id="add-task">Add Task</button>
+    </form>
+    
+    <ul id="task-list"></ul>
 
-</html>`
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const taskForm = document.getElementById('task-form');
+            const taskInput = document.getElementById('task-input');
+            const taskList = document.getElementById('task-list');
+            
+            // Load tasks from localStorage when page loads
+            loadTasks();
+            
+            taskForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                addTask();
+            });
+            
+            function addTask() {
+                const taskText = taskInput.value.trim();
+                
+                if (taskText) {
+                    // Create new task item
+                    const taskItem = document.createElement('li');
+                    taskItem.className = 'task-item';
+                    
+                    const taskSpan = document.createElement('span');
+                    taskSpan.textContent = taskText;
+                    
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'delete-btn';
+                    deleteBtn.textContent = 'Delete';
+                    deleteBtn.addEventListener('click', function() {
+                        taskItem.remove();
+                        saveTasks();
+                    });
+                    
+                    taskItem.appendChild(taskSpan);
+                    taskItem.appendChild(deleteBtn);
+                    taskList.appendChild(taskItem);
+                    
+                    // Clear input field
+                    taskInput.value = '';
+                    
+                    // Save tasks to localStorage
+                    saveTasks();
+                }
+            }
+            
+            function saveTasks() {
+                const tasks = [];
+                document.querySelectorAll('.task-item span').forEach(function(task) {
+                    tasks.push(task.textContent);
+                });
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+            }
+            
+            function loadTasks() {
+                const savedTasks = localStorage.getItem('tasks');
+                if (savedTasks) {
+                    JSON.parse(savedTasks).forEach(function(taskText) {
+                        // Create task item (similar to addTask function)
+                        const taskItem = document.createElement('li');
+                        taskItem.className = 'task-item';
+                        
+                        const taskSpan = document.createElement('span');
+                        taskSpan.textContent = taskText;
+                        
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.className = 'delete-btn';
+                        deleteBtn.textContent = 'Delete';
+                        deleteBtn.addEventListener('click', function() {
+                            taskItem.remove();
+                            saveTasks();
+                        });
+                        
+                        taskItem.appendChild(taskSpan);
+                        taskItem.appendChild(deleteBtn);
+                        taskList.appendChild(taskItem);
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
